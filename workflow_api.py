@@ -10,11 +10,13 @@ from urllib.parse import urlencode
 
 COMFY_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_WORKFLOW_PATH = COMFY_ROOT / "qwen-image-unet-empty.json"
+Z_IMAGE_WORKFLOW_PATH = COMFY_ROOT / "Z-Image文生图基础工作流_api.json"
 
 KSAMPLER_NODE = "3"
 POSITIVE_NODE = "6"
 NEGATIVE_NODE = "7"
-LATENT_NODE = "58"
+QWEN_IMAGE_LATENT_NODE = "58"
+Z_IMAGE_LATENT_NODE = "13"
 
 MAX_SEED = 2**64
 DEFAULT_TIMEOUT_SECONDS = 600.0
@@ -40,6 +42,14 @@ def load_workflow_template(path=DEFAULT_WORKFLOW_PATH):
 
 
 def apply_qwen_image_parameters(workflow, payload):
+    return apply_workflow_parameters(workflow, payload, QWEN_IMAGE_LATENT_NODE)
+
+
+def apply_z_image_parameters(workflow, payload):
+    return apply_workflow_parameters(workflow, payload, Z_IMAGE_LATENT_NODE)
+
+
+def apply_workflow_parameters(workflow, payload, latent_node):
     patched = copy.deepcopy(workflow)
 
     if "positive_prompt" in payload:
@@ -55,11 +65,11 @@ def apply_qwen_image_parameters(workflow, payload):
     if "cfg" in payload:
         _set_input(patched, KSAMPLER_NODE, "cfg", _parse_float(payload["cfg"], "cfg", minimum=0.0))
     if "width" in payload:
-        _set_input(patched, LATENT_NODE, "width", _parse_int(payload["width"], "width", minimum=1))
+        _set_input(patched, latent_node, "width", _parse_int(payload["width"], "width", minimum=1))
     if "height" in payload:
-        _set_input(patched, LATENT_NODE, "height", _parse_int(payload["height"], "height", minimum=1))
+        _set_input(patched, latent_node, "height", _parse_int(payload["height"], "height", minimum=1))
     if "batch_size" in payload:
-        _set_input(patched, LATENT_NODE, "batch_size", _parse_int(payload["batch_size"], "batch_size", minimum=1))
+        _set_input(patched, latent_node, "batch_size", _parse_int(payload["batch_size"], "batch_size", minimum=1))
 
     return patched, seed
 
@@ -91,6 +101,14 @@ def build_image_results(history_entry, base_url):
 
 
 async def handle_qwen_image_run(request):
+    return await _handle_workflow_run(request, DEFAULT_WORKFLOW_PATH, apply_qwen_image_parameters)
+
+
+async def handle_z_image_run(request):
+    return await _handle_workflow_run(request, Z_IMAGE_WORKFLOW_PATH, apply_z_image_parameters)
+
+
+async def _handle_workflow_run(request, workflow_path, apply_parameters):
     from aiohttp import web
     from server import PromptServer
 
@@ -101,8 +119,8 @@ async def handle_qwen_image_run(request):
             "timeout",
             minimum=1.0,
         )
-        workflow = load_workflow_template()
-        workflow, seed = apply_qwen_image_parameters(workflow, payload)
+        workflow = load_workflow_template(workflow_path)
+        workflow, seed = apply_parameters(workflow, payload)
         prompt_id = _parse_prompt_id(payload.get("prompt_id"))
 
         server = PromptServer.instance
@@ -137,6 +155,10 @@ def register_routes():
     @routes.post("/workflow-api/qwen-image/run")
     async def qwen_image_run(request):
         return await handle_qwen_image_run(request)
+
+    @routes.post("/workflow-api/z-image/run")
+    async def z_image_run(request):
+        return await handle_z_image_run(request)
 
     register_routes._registered = True
 

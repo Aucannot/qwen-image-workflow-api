@@ -1,0 +1,111 @@
+{
+  "3": {
+    "inputs": {
+      "seed": 337233118851923,
+      "steps": 40,
+      "cfg": 4,
+      "sampler_name": "res_multistep",
+      "scheduler": "simple",
+      "denoise": 1,
+      "model": [
+        "11",
+        0
+      ],
+      "positive": [
+        "6",
+        0
+      ],
+      "negative": [
+        "7",
+        0
+      ],
+      "latent_image": [
+        "13",
+        0
+      ]
+    },
+    "class_type": "KSampler"
+  },
+  "6": {
+    "inputs": {
+      "text": "Young Chinese woman in red Hanfu, intricate embroidery",
+      "clip": [
+        "18",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode"
+  },
+  "7": {
+    "inputs": {
+      "text": "",
+      "clip": [
+        "18",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode"
+  },
+  "8": {
+    "inputs": {
+      "samples": [
+        "3",
+        0
+      ],
+      "vae": [
+        "17",
+        0
+      ]
+    },
+    "class_type": "VAEDecode"
+  },
+  "9": {
+    "inputs": {
+      "filename_prefix": "ComfyUI",
+      "images": [
+        "8",
+        0
+      ]
+    },
+    "class_type": "SaveImage"
+  },
+  "11": {
+    "inputs": {
+      "shift": 3,
+      "model": [
+        "19",
+        0
+      ]
+    },
+    "class_type": "ModelSamplingAuraFlow"
+  },
+  "13": {
+    "inputs": {
+      "width": 1024,
+      "height": 1024,
+      "batch_size": 1
+    },
+    "class_type": "EmptySD3LatentImage"
+  },
+  "17": {
+    "inputs": {
+      "vae_name": "ae.safetensors"
+    },
+    "class_type": "VAELoader"
+  },
+  "18": {
+    "inputs": {
+      "clip_name": "qwen_3_4b_fp4_mixed.safetensors",
+      "type": "lumina2",
+      "device": "default"
+    },
+    "class_type": "CLIPLoader"
+  },
+  "19": {
+    "inputs": {
+      "model_type": "ZImage",
+      "weight_dtype": "bf16"
+    },
+    "class_type": "UNETEmptyLoaderByType"
+  }
+}

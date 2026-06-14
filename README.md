@@ -22,11 +22,11 @@ POST /api/workflow-api/z-image/run
 
 ## Workflow Templates
 
-The plugin reads workflow JSON files from the ComfyUI root directory:
+The plugin reads workflow JSON files bundled inside this plugin:
 
 ```text
-qwen-image-unet-empty.json
-Z-Image文生图基础工作流_api.json
+custom_nodes/comfy-workflow-api/workflows/qwen-image-unet-empty.json
+custom_nodes/comfy-workflow-api/workflows/z-image-txt2img.json
 ```
 
 Restart ComfyUI after installing or changing this plugin. Custom API routes are

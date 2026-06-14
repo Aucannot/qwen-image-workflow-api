@@ -9,8 +9,10 @@ from urllib.parse import urlencode
 
 
 COMFY_ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_WORKFLOW_PATH = COMFY_ROOT / "qwen-image-unet-empty.json"
-Z_IMAGE_WORKFLOW_PATH = COMFY_ROOT / "Z-Image文生图基础工作流_api.json"
+PLUGIN_ROOT = Path(__file__).resolve().parent
+WORKFLOWS_DIR = PLUGIN_ROOT / "workflows"
+DEFAULT_WORKFLOW_PATH = WORKFLOWS_DIR / "qwen-image-unet-empty.json"
+Z_IMAGE_WORKFLOW_PATH = WORKFLOWS_DIR / "z-image-txt2img.json"
 
 KSAMPLER_NODE = "3"
 POSITIVE_NODE = "6"
